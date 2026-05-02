@@ -1,0 +1,8 @@
+nba_api
+pandas
+scikit-learn
+joblib
+streamlit
+requests
+python-dotenv
+pyarrow

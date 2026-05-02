@@ -1,0 +1,9 @@
+{
+  "bets_resolved": 4,
+  "hit_rate": 0.5,
+  "avg_ev_per_unit": 2.1583476144983065,
+  "realized_roi_per_bet": 0.0675,
+  "start_bankroll": 1000.0,
+  "ending_bankroll": 1000.27,
+  "max_drawdown": -0.0009993504222255423
+}

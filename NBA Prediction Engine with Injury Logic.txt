@@ -1,0 +1,23 @@
+NBA Prediction Engine with Injury Logic
+Project Goal: Build a professional-grade NBA prediction engine that outputs Game Winners, Total Points (Over/Under), and Player Points by accounting for real-time roster changes.
+1. Data & Injury Integration (CRITICAL):
+Library: Use nbainjuries (pip install nbainjuries) to fetch official daily reports.
+Logic: Create a function to filter the roster for tonight’s games. If a player status is 'OUT', they must be excluded from the team's statistical profile.
+Impact Analysis: If a "High-Usage" player (Usage Rate > 25%) is OUT, the model should dynamically redistribute their average field goal attempts to the remaining active starters to adjust the predicted team total.
+2. Feature Engineering:
+Rest & Schedule: Calculate "Rest Days" for both teams. Flag "back-to-back" games (0 days rest).
+Rolling Performance: Use nba_api to calculate 5-game and 10-game rolling averages for Offensive/Defensive Ratings and Pace.
+Location Splits: Factor in Home vs. Away win percentages and scoring averages.
+3. Model Architecture:
+The Winner (Classification): Implement an XGBoost or Random Forest model to predict the straight-up winner. Features: Rolling Net Rating, Rest Advantage, and Injury-Adjusted Roster Strength.
+The Score (Regression): Implement a regressor to predict Total Points. Focus on the combined "Pace" of both teams and their recent "3-Point Shooting Percentage."
+Player Points: Build a secondary logic to predict individual player points based on their 10-game average adjusted by the opponent's defensive rank against that specific position.
+4. Implementation Steps for Cursor:
+Review my existing prototype and refactor it into modular Python files (e.g., data_fetcher.py, models.py, predictor.py).
+Set up a daily "Scraper" loop that checks nbainjuries every hour.
+Train the models on historical data from the 2023-24 and current 2024-25 seasons.
+Create a summary output (Markdown table or CSV) for today's games showing: [Matchup] | [Predicted Winner] | [Predicted Total Points] | [Key Injury Impact].
+Coding Standards:
+Use nba_api for all official stats.
+Add clear print statements so I can see the "Injury Adjustment" happening in the terminal.
+Handle API errors gracefully with retries or cached data.

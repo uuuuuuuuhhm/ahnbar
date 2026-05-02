@@ -1,0 +1,20 @@
+For building an NBA data analysis and prediction system, you can use Auto mode for about 90% of the project.
+In April 2026, Cursor's Auto mode is optimized to handle routine coding tasks, but specific complex phases of a machine learning (ML) pipeline still benefit from premium models.
+ 
+Building an NBA Prediction System: Model Selection Strategy
+
+Developing an NBA prediction system typically involves data scraping, feature engineering (e.g., Offensive Rating, Rebound Differential), and model training (e.g., XGBoost). 
+
+When to use "Auto" (Free/Unlimited): Use this for the "heavy lifting" of the boilerplate.
+
+When to switch to Premium (Claude 3.7 / GPT-5): Use your premium credits for the mathematical reasoning parts, such as:
+Feature Engineering Architecture: Defining how to weight momentum vs. rest-day disadvantages.
+Complex Debugging: Fixing issues in your training loops or high-dimensional data visualizations.
+Refactoring: Large-scale changes to your prediction pipeline. 
+
+
+Recommended Workflow for your NBA System
+Phase 1: Data Acquisition: Set Cursor to Auto to write scripts that scrape NBA.com or load CSVs.
+Phase 2: Logic Design: Switch to Claude 3.7 to plan the prediction logic (e.g., "How should I handle back-to-back game fatigue in my model?").
+Phase 3: Implementation: Switch back to Auto to execute that plan and write the actual training functions.
+Phase 4: Optimization: If your model accuracy is low, use a Premium Model to analyze the results and suggest advanced algorithms like XGBoost or SHAP models.

@@ -1,0 +1,4 @@
+-fetch results of predicted games and store them
+-start to train model on nba game results and train them vs the prediction
+-implement nba game score prediction math into the model
+-make own interface or use other open source ones that can be better modified to fit a prediction panel and graphs 

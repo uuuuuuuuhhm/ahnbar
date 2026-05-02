@@ -1,0 +1,12 @@
+{
+  "mae_home_holdout": 10.029612448498318,
+  "mae_away_holdout": 9.775705075587357,
+  "rmse_home_holdout": 12.535780771164958,
+  "rmse_away_holdout": 12.353304377102306,
+  "model": "HistGradientBoostingRegressor",
+  "hyperparams": {
+    "max_depth": 7,
+    "learning_rate": 0.06,
+    "max_iter": 450
+  }
+}

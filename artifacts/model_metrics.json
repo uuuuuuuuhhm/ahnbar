@@ -1,0 +1,66 @@
+{
+  "champion_model": "elo_baseline",
+  "walk_forward_summary": [
+    {
+      "model": "elo_baseline",
+      "accuracy": 0.6819277108433734,
+      "log_loss": 0.6111804371727605,
+      "brier": 0.20949452262605348
+    },
+    {
+      "model": "logistic",
+      "accuracy": 0.6594377510040161,
+      "log_loss": 0.6251800148731664,
+      "brier": 0.216568215619448
+    },
+    {
+      "model": "hist_gb",
+      "accuracy": 0.6433734939759036,
+      "log_loss": 0.6901909525240514,
+      "brier": 0.23356746222642255
+    }
+  ],
+  "champion_selection_rule": "Minimum mean walk-forward log_loss among logistic, hist_gb, and elo_baseline (probabilistic calibration). Highest walk-forward accuracy can differ (see walk_forward_accuracy_leader).",
+  "walk_forward_accuracy_leader": "elo_baseline",
+  "walk_forward_log_loss_leader": "elo_baseline",
+  "holdout_metrics": {
+    "accuracy": 0.7454909819639278,
+    "log_loss": 0.5590902277861939,
+    "brier": 0.18736407505491776
+  },
+  "calibrator_method": "platt",
+  "feedback_calibrator_method": "none",
+  "feedback_calibrator_rows": 33,
+  "feedback_dataset_rows": 33,
+  "feedback_min_rows": 20,
+  "feedback_apply_min_rows": 40,
+  "feedback_low_sample_warning_rows": 40,
+  "feedback_calibrator_low_sample_warning": true,
+  "feedback_calibrator_selected": false,
+  "feedback_calibrator_reason": "validation_not_improved",
+  "feedback_mode": "off",
+  "feedback_shadow_delta_brier": 0.0,
+  "feedback_shadow_delta_log_loss": 0.0,
+  "feedback_shadow_available": false,
+  "feedback_shadow_reason": "validation_not_improved",
+  "holdout_mean_confidence": 0.647982570561439,
+  "data_quality": {
+    "nan_rate": 0.0,
+    "stale_days": 1,
+    "recent_games_30d": 264,
+    "quality_warning": false,
+    "quality_warning_reasons": []
+  },
+  "drift_warning": true,
+  "drift_warning_reasons": [
+    "confidence_shift>0.030"
+  ],
+  "drift_brier_shift_vs_prev": -0.022047928595506222,
+  "drift_confidence_shift_vs_prev": -0.03263034409468346,
+  "hist_gb_hyperparams": {
+    "max_depth": 6,
+    "learning_rate": 0.04,
+    "max_iter": 350
+  },
+  "hist_gb_tuning_note": "HistGradientBoostingClassifier hparams adjusted from max_depth=5, learning_rate=0.05, max_iter=300 to improve holdout log loss; compare holdout_metrics."
+}

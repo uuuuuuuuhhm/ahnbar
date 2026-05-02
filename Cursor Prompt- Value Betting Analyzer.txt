@@ -1,0 +1,18 @@
+Value Betting Analyzer
+"I have an NBA prediction model prototype that outputs a win probability for each team. I want to build a tool that uses these predictions to analyze and find 'Value' in betting odds.
+1. Probability to 'Fair Odds' Conversion:
+Write a function that takes my model's win probability (e.g., 0.65) and converts it into 'Fair' Decimal, American, and Fractional odds.
+2. Live Odds Comparison:
+Create a module to fetch current NBA market odds from an API (like 'The Odds API'). Compare the market's odds against my model’s 'Fair Odds.'
+3. The 'Value' Calculation:
+Calculate the Expected Value (EV) for each bet using the formula:
+EV = (Model Probability * Market Profit) – (Loss Probability * Stake).
+Only highlight games where the EV is positive (Edge > 3%).
+4. Filtering & Display:
+Output a list of 'Recommended Plays.' For each play, show:
+The Matchup
+My Model's Win %
+The 'Fair Price' vs. The 'Market Price'
+The specific percentage 'Edge' I have over the bookmaker.
+5. Kelly Criterion Integration:
+Add a small helper function that uses the Kelly Criterion to suggest a bet size based on the strength of the edge my model has found."
