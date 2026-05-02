@@ -104,6 +104,45 @@ Each run also appends results to:
 
 In the sidebar, pick a **display timezone** from the IANA dropdown. Tip-off in tables is shown as **Start (local)** from `game_start_time_utc`; legacy **`game_start_time_24h`** is used only when UTC is missing. Default selection is **`Europe/Berlin`**.
 
+The sidebar also lists a separate Streamlit page **`Automation`** (`pages/1_Automation.py`) with the same background-job commands documented below.
+
+## 4b) Background automation (fetch, score log, optional train)
+
+Use a single orchestrator so history and `scored_predictions` stay current without opening the UI:
+
+```bash
+cd "/Users/prada4k/Documents/nba-win-predictor"
+source .venv/bin/activate
+python jobs/daily.py
+```
+
+Flags:
+
+- `--skip-fetch` — only run `backfill_prediction_results.py` on existing `data/historical_games.csv`
+- `--retrain` — pass `--retrain` to backfill (runs full `train_model` after scoring)
+- `--train-score-models` — run `train_score_models.py` after backfill
+- `--predict` — run `predict_next_games.py` at the end
+- `--fetch-extra "…"` — extra shell-quoted arguments forwarded to `fetch_data.py`
+
+Shell wrapper (same flags):
+
+```bash
+./scripts/daily_pipeline.sh --skip-fetch
+```
+
+Logs append to **`logs/daily_pipeline.log`** (UTC lines).
+
+**macOS schedule:** see **[`scripts/LAUNCHD.md`](scripts/LAUNCHD.md)** for a `launchd` plist template (`ProgramArguments` should use your **venv `python`** absolute path and `jobs/daily.py`).
+
+**Play-by-play spike (optional, not used by the win model yet):**
+
+```bash
+python jobs/pbp_spike.py
+python jobs/pbp_spike.py --game-id 0042500176
+```
+
+Writes Parquet under `data/pbp_spike/` (ignored by git except when you remove the ignore rule).
+
 ## 5) Evaluate model quality
 
 ```bash

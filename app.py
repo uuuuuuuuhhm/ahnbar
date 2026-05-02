@@ -2509,7 +2509,6 @@ with tab_pipeline:
             if st.button("Train win model (train_model.py)", type="primary", key="btn_train_win"):
                 try:
                     import train_model
-                    from train_model import write_latest_team_state_cache
 
                     os.chdir(root)
                     with st.spinner("Training win model..."):
@@ -2517,7 +2516,7 @@ with tab_pipeline:
                             log = run_and_capture(train_model.main)
                     st.code(log)
                     try:
-                        write_latest_team_state_cache()
+                        train_model.write_latest_team_state_cache()
                         st.caption("`data/latest_team_state_cache.csv` refreshed for predictions.")
                     except Exception:
                         pass
@@ -2574,7 +2573,7 @@ with tab_pipeline:
             if r_no_recent:
                 r_args.append("--no-recent-date-boost")
             try:
-                from train_model import write_latest_team_state_cache
+                import train_model
 
                 os.chdir(root)
                 with st.spinner(
@@ -2588,7 +2587,7 @@ with tab_pipeline:
                     st.error(f"retrain_from_feedback.py exited with code {code_out}")
                 else:
                     try:
-                        write_latest_team_state_cache()
+                        train_model.write_latest_team_state_cache()
                     except Exception:
                         pass
                     st.success("Pipeline complete. Metrics header updated — open **Evaluate Model**.")
