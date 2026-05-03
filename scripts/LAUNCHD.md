@@ -10,9 +10,17 @@ Replace `YOUR_USER` and, if needed, the project path and venv Python.
 - Interpreter: `/Users/YOUR_USER/Documents/nba-win-predictor/.venv/bin/python`
 - Log directory: `logs/` under the project (created by `jobs/daily.py`)
 
-## 2) Plist template
+## 2) Copy-paste plist (recommended)
 
-Save as `~/Library/LaunchAgents/com.nba-win-predictor.daily.plist` (label must be unique on your machine).
+Repo file: **[`scripts/launchd/com.nba-win-predictor.daily.plist.example`](launchd/com.nba-win-predictor.daily.plist.example)** — runs `jobs/daily.py --profile nightly` (fetch, score log, feedback patch, predictions, value plays). Replace `YOUR_USER` and paths. Add **`ODDS_API_KEY`** under `EnvironmentVariables` when you want the value step; if omitted, `daily.py` skips `predict_value_plays.py` and logs the skip (other steps still run).
+
+Save a copy as `~/Library/LaunchAgents/com.nba-win-predictor.daily.plist` (label must be unique on your machine).
+
+## 2b) Inline plist templates
+
+### Light job (fetch + score log only)
+
+Save as `~/Library/LaunchAgents/com.nba-win-predictor.daily.plist` if you prefer a minimal run (no predictions, no value step).
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -60,12 +68,25 @@ This runs every day at **06:15** local time. Adjust `StartCalendarInterval` or s
 Duplicate the plist with a different `Label`, point `ProgramArguments` to the same `python` but add arguments:
 
 ```xml
-<string>jobs/daily.py</string>
+<string>/Users/YOUR_USER/Documents/nba-win-predictor/jobs/daily.py</string>
 <string>--skip-fetch</string>
 <string>--retrain</string>
 ```
 
 Use a different clock (e.g. Monday 05:00) so you do not hammer `stats.nba.com` at the same minute as the fetch job.
+
+### Nightly profile (same machine, different label)
+
+`ProgramArguments` after the `python` path:
+
+```xml
+<string>/Users/YOUR_USER/Documents/nba-win-predictor/jobs/daily.py</string>
+<string>--skip-fetch</string>
+<string>--profile</string>
+<string>nightly</string>
+```
+
+Use **`--skip-fetch`** when a separate job already ran `fetch_data.py` the same morning.
 
 ## 3) Load and verify
 

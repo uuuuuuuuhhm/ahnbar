@@ -1,0 +1,108 @@
+# Run jobs/daily.py in CI: manual trigger from the Actions tab, or on a daily schedule.
+#
+# Repository secrets (optional):
+#   ODDS_API_KEY — required for the value-bets step when using profile "nightly".
+#
+# Note: stats.nba.com often throttles or blocks cloud/datacenter IPs. Scheduled runs
+# default to --skip-fetch so backfill/predict use the committed data/historical_games.csv.
+# Use workflow_dispatch with "Skip NBA fetch" unchecked after you know fetch works from Actions.
+
+name: Daily pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_fetch:
+        description: Skip fetch_data.py (recommended on GitHub-hosted runners)
+        type: boolean
+        default: true
+      profile:
+        description: Preset forwarded to jobs/daily.py --profile
+        type: choice
+        options:
+          - nightly
+          - none
+        default: nightly
+      retrain:
+        description: Pass --retrain to backfill (full train_model; slow)
+        type: boolean
+        default: false
+  schedule:
+    # ~06:30 Pacific; adjust if you want a different post-games window (cron is UTC).
+    - cron: "30 14 * * *"
+
+concurrency:
+  group: daily-pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    env:
+      ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Resolve arguments
+        id: args
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            skip_fetch=true
+            profile=nightly
+            retrain=false
+          else
+            skip_fetch=${{ inputs.skip_fetch }}
+            profile=${{ inputs.profile }}
+            retrain=${{ inputs.retrain }}
+          fi
+          echo "skip_fetch=$skip_fetch" >> "$GITHUB_OUTPUT"
+          echo "profile=$profile" >> "$GITHUB_OUTPUT"
+          echo "retrain=$retrain" >> "$GITHUB_OUTPUT"
+
+      - name: Run jobs/daily.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARGS=()
+          if [ "${{ steps.args.outputs.skip_fetch }}" = "true" ]; then
+            ARGS+=(--skip-fetch)
+          fi
+          if [ "${{ steps.args.outputs.profile }}" = "nightly" ]; then
+            ARGS+=(--profile nightly)
+          fi
+          if [ "${{ steps.args.outputs.retrain }}" = "true" ]; then
+            ARGS+=(--retrain)
+          fi
+          echo "python jobs/daily.py ${ARGS[*]}"
+          python jobs/daily.py "${ARGS[@]}"
+
+      - name: Upload pipeline log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-pipeline-log
+          path: logs/daily_pipeline.log
+          if-no-files-found: ignore
+
+      - name: Upload data and metrics snapshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-pipeline-outputs
+          path: |
+            data/*.csv
+            artifacts/*.json
+          if-no-files-found: ignore

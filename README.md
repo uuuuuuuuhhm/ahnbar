@@ -106,6 +106,8 @@ In the sidebar, pick a **display timezone** from the IANA dropdown. Tip-off in t
 
 The sidebar also lists a separate Streamlit page **`Automation`** (`pages/1_Automation.py`) with the same background-job commands documented below.
 
+Long-form roadmap (sprint archive + backlog): **[`docs/PROJECT_PIPELINE_AND_ROADMAP.md`](docs/PROJECT_PIPELINE_AND_ROADMAP.md)**.
+
 ## 4b) Background automation (fetch, score log, optional train)
 
 Use a single orchestrator so history and `scored_predictions` stay current without opening the UI:
@@ -120,19 +122,32 @@ Flags:
 
 - `--skip-fetch` — only run `backfill_prediction_results.py` on existing `data/historical_games.csv`
 - `--retrain` — pass `--retrain` to backfill (runs full `train_model` after scoring)
+- `--patch-feedback` — after backfill, refit the feedback calibrator into `artifacts/model.joblib` without a full retrain (**skipped when `--retrain` is set**, because training already refreshes artifacts)
 - `--train-score-models` — run `train_score_models.py` after backfill
-- `--predict` — run `predict_next_games.py` at the end
+- `--predict` — run `predict_next_games.py` after prior steps
+- `--predict-value` / `--value` — run `predict_value_plays.py` after `--predict` (if you pass value without predict, predict is enabled automatically). Requires **`ODDS_API_KEY`** in `.env` or the environment; if unset, the value step is skipped and logged (exit code 0).
+- `--profile nightly` — preset: `--patch-feedback --predict --predict-value` (fetch runs unless `--skip-fetch`)
 - `--fetch-extra "…"` — extra shell-quoted arguments forwarded to `fetch_data.py`
+
+**Recommended schedules:**
+
+- **Typical night:** `python jobs/daily.py --profile nightly` (or `--skip-fetch --profile nightly` after you already fetched manually).
+- **Weekly heavy refresh:** same as above but add **`--retrain`** to the backfill step (omit `--patch-feedback` in your head; it is ignored when `--retrain` is present).
 
 Shell wrapper (same flags):
 
 ```bash
 ./scripts/daily_pipeline.sh --skip-fetch
+./scripts/daily_pipeline.sh --profile nightly
 ```
 
 Logs append to **`logs/daily_pipeline.log`** (UTC lines).
 
-**macOS schedule:** see **[`scripts/LAUNCHD.md`](scripts/LAUNCHD.md)** for a `launchd` plist template (`ProgramArguments` should use your **venv `python`** absolute path and `jobs/daily.py`).
+**macOS schedule:** see **[`scripts/LAUNCHD.md`](scripts/LAUNCHD.md)** and the copy-paste plist under **[`scripts/launchd/com.nba-win-predictor.daily.plist.example`](scripts/launchd/com.nba-win-predictor.daily.plist.example)** (`ProgramArguments` should use your **venv `python`** absolute path and `jobs/daily.py`).
+
+**GitHub Actions:** workflow **[`.github/workflows/daily-pipeline.yml`](.github/workflows/daily-pipeline.yml)** — in the repo on GitHub, open **Actions** → **Daily pipeline** → **Run workflow**. Optional repository secret **`ODDS_API_KEY`** enables the value step when you use the **nightly** profile. The **schedule** trigger runs **`--skip-fetch --profile nightly`** each day so the job uses the **`data/historical_games.csv`** already in the branch (cloud IPs are often poor for `stats.nba.com`; run **`fetch_data.py`** locally and push when history needs a refresh). Each run uploads **`logs/daily_pipeline.log`** plus a CSV / **`artifacts/*.json`** snapshot as workflow artifacts.
+
+**Cursor / VS Code:** **Terminal → Run Task…** (or Command Palette **Tasks: Run Task**) and pick **Daily pipeline …** from **[`.vscode/tasks.json`](.vscode/tasks.json)**. Tasks assume a **`.venv`** at the project root with dependencies installed.
 
 **Play-by-play spike (optional, not used by the win model yet):**
 
