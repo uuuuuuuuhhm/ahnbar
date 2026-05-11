@@ -1,4 +1,4 @@
-# NBA Win Predictor (Beginner Friendly)
+# NBA Predicton Model
 
 This project predicts **who wins an NBA game** and gives a probability (for example: `Home team win chance: 63%`). After training optional score models, it can also predict **home and away point totals** for upcoming games.
 
